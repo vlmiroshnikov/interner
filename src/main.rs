@@ -7,10 +7,18 @@ pub struct Interner {
     full: Vec<String>,
 }
 
-impl Interner {
+#[derive(Debug)]
+pub struct Stats {
+    pub uniq_count: usize,
+    pub total_size: usize,
+}
 
-    pub fn stats(self) -> (usize, usize) {
-        (self.map.len(), self.full.len())
+impl Interner {
+    pub fn stats(self) -> Stats {
+        Stats {
+            uniq_count: self.map.len(),
+            total_size: self.full.iter().fold(0, |acc, it| acc + it.len()),
+        }
     }
 
     pub fn with_capacity(cap: usize) -> Interner {
@@ -67,9 +75,8 @@ pub struct StrId(u32);
 fn main() {
     let mut interner = Interner::with_capacity(10);
     for i in 0..100000 {
-       interner.intern(format!("string_{}", i % 1000).as_str());
+        interner.intern(format!("string_{}", i % 1000).as_str());
     }
 
     println!("{:?}", interner.stats())
 }
-
